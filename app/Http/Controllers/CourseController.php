@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Course;
@@ -9,7 +8,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CourseController extends Controller
 {
- public function index(): JsonResponse
+    // Get all Course with authors
+    public function index(): JsonResponse
     {
 
         $dataCourse = Course::all();
@@ -19,76 +19,76 @@ class CourseController extends Controller
     public function show($id): JsonResponse
     {
         try {
-            $Student = Course::findOrFail($id);
-            return response()->json($Student, 200);
+            $course = Course::findOrFail($id);
+            return response()->json($course, 200);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => 'Data Course tidak ditemukan'], 404);
+            return response()->json(['message' => 'Course Not Found'], 404);
         }
     }
 
-    // Menambahkan user baru
+    // Menambahkan Course baru
     public function store(Request $request): JsonResponse
     {
         $request->validate([
-            'name' => 'required|string|max:255|unique:courses,name',
-            'code' => 'required|string|max:255|unique:courses,code',
-            'credits' => 'required|integer|min:2|max:9',
-            'semester' => 'required|integer|max:16',
+            'name' => 'required|string|max:255',
+            'code' => 'required|string|max:255',
+            'credits' => 'required|string',
+            'semester' => 'required|string'
         ]);
 
-        $Student = Course::create([
+        $course = Course::create([
             'name' => $request->name,
             'code' => $request->code,
             'credits' => $request->credits,
-            'semester' => $request->semester,
+            'semester' => $request ->semester
         ]);
 
 
         return response()->json([
-            'message' => 'Data Course berhasil ditambahkan.',
-            'data' => $Student
+            'message' => 'The Course Has Been Added Successfully.',
+            'data' => $course
         ], 201);
     }
 
-      // Mengupdate data user
+      // Mengupdate data Course
       public function update(Request $request, $id): JsonResponse
       {
           try {
-              $Student = Course::findOrFail($id);
+              $course = Course::findOrFail($id);
   
               $request->validate([
-                'name' => 'sometimes|string|max:255|unique:courses,name',
-                'code' => 'sometimes|string|max:255|unique:courses,code',
-                'credits' => 'sometimes|integer|min:2|max:9',
-                'semester' => 'sometimes|integer|max:16',
+                'name' => 'sometimes|string|max:255',
+                'code' => 'sometimes|string|max:255',
+                'credits' => 'sometimes|string',
+                'semester' => 'sometimes|string'
             ]);
   
               // Hanya update field yang dikirim
-              $data = $request->only(['name', 'code', 'credits','semester']);
+              $data = $request->only(['name', 'code', 'credits', 'semester']);
 
-              $Student->update($data);
+              $course->update($data);
               
   
               return response()->json([
-                  'message' => $Student->wasChanged()
-                      ? 'Data Course berhasil diupdate.'
-                      : 'Tidak ada perubahan pada data Course.',
-                  'data' => $Student
+                  'message' => $course->wasChanged()
+                      ? 'Course Successfully Updated.'
+                      : 'No Changes to Course Data.',
+                  'data' => $course
               ], 200);
           } catch (ModelNotFoundException $e) {
-              return response()->json(['message' => 'Data Course tidak ditemukan'], 404);
+              return response()->json(['message' => 'Course Not Found'], 404);
           }
       }
   
       public function destroy($id): JsonResponse
       {
           try {
-              $Student = Course::findOrFail($id);
-              $Student->delete();
+              $course = Course::findOrFail($id);
+              $course->delete();
   
-              return response()->json(['message' => 'Data Course berhasil dihapus.']);
+              return response()->json(['message' => 'The Course Has Been Successfully Deleted.']);
           } catch (ModelNotFoundException $e) {
-              return response()->json(['message' => 'Data Course tidak ditemukan.'], 404);
+              return response()->json(['message' => 'Course Not Found.'], 404);
           }
       }
 }

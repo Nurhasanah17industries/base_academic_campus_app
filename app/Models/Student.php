@@ -2,34 +2,32 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Student extends Model
 {
-  use HasUlids;
-    
-    protected $table = 'student';
-    
+    use HasUlids;
+
+
     protected $fillable = [
         'name',
         'email',
         'NIM',
         'major',
-        'enlorment_year'
+        'enrollment_year',
     ];
 
-    protected function casts(): array
+    public function enrollments(): HasMany
     {
-        return [
-            'name' => 'string',
-            'nim' => 'string',
-        ];
+        return $this->hasMany(Enrollment::class, 'student_id');
     }
 
+    // public function getRouteKeyName()
+    // {
+    //     return 'student_id';
+    // }
 
-    public function enrollment():HasMany{
-        return $this->hasMany(Enrollment::class,'student_id');
-    }
+
 }

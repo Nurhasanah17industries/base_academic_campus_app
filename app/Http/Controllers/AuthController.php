@@ -17,10 +17,10 @@ class AuthController extends Controller
         $credentials = $request->validated();
 
 
-        $user = User::whereRaw('BINARY username = ?', [$credentials['username']])->first();
+        $user = User::whereRaw('BINARY email = ?', [$credentials['email']])->first();
         if (! $user || ! Hash::check($credentials['password'], $user->password)) {
             throw ValidationException::withMessages([
-                'username' => 'Username atau password salah.',
+                'email' => 'email atau password salah.',
             ]);
         }
 

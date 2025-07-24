@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Enrollment;
@@ -9,90 +8,90 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class EnrollmentController extends Controller
 {
- public function index(): JsonResponse
+    // Get all Enrollment with authors
+    public function index(): JsonResponse
     {
 
-        $dataEnrollment = Enrollment::all();
+        $dataEnrollment = Enrollment::with(['course','student'])->get();
         return response()->json($dataEnrollment, 200);
     }
 
     public function show($id): JsonResponse
     {
         try {
-            $Student = Enrollment::findOrFail($id);
-            return response()->json($Student, 200);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => 'Data Enrollment tidak ditemukan'], 404);
+            $enrollment = Enrollment::findOrFail($id);
+            return response()->json($enrollment, 200);
+        } catch (ModelNotFoundException $enrollment) {
+            return response()->json(['message' => 'Enrollment Not Found'], 404);
         }
     }
 
-    // Menambahkan user baru
+    // Menambahkan enrollment baru
     public function store(Request $request): JsonResponse
     {
         $request->validate([
             'student_id' => 'required|string|max:255',
             'course_id' => 'required|string|max:255',
             'grade' => 'required|string',
-            'attendence' => 'required|string',
-            'status' => 'required|string',
+            'attendance' => 'required|string',
+            'status' => 'required|string'
         ]);
 
-        $Student = Enrollment::create([
+        $enrollment = Enrollment::create([
             'student_id' => $request->student_id,
             'course_id' => $request->course_id,
             'grade' => $request->grade,
-            'attendence' => $request->attendence,
-            'status' => $request->status
-
+            'attendance' => $request ->attendance,
+            'status' => $request ->status,
         ]);
 
 
         return response()->json([
-            'message' => 'Data Enrollment berhasil ditambahkan.',
-            'data' => $Student
+            'message' => 'The Enrollment Has Been Added Successfully.',
+            'data' => $enrollment
         ], 201);
     }
 
-      // Mengupdate data user
+      // Mengupdate data enrollment
       public function update(Request $request, $id): JsonResponse
       {
           try {
-              $Student = Enrollment::findOrFail($id);
+              $enrollment = Enrollment::findOrFail($id);
   
               $request->validate([
                 'student_id' => 'sometimes|string|max:255',
                 'course_id' => 'sometimes|string|max:255',
                 'grade' => 'sometimes|string',
-                'attendence' => 'sometimes|string',
-                'status' => 'sometimes|string',                
+                'attendance' => 'sometimes|string',
+                'status' => 'sometimes|string'
             ]);
   
               // Hanya update field yang dikirim
-              $data = $request->only(['student_id', 'course_id', 'grade','attendence','status']);
+              $data = $request->only(['student_id', 'course_id', 'grade', 'attendance','status']);
 
-              $Student->update($data);
+              $enrollment->update($data);
               
   
               return response()->json([
-                  'message' => $Student->wasChanged()
-                      ? 'Data Enrolment berhasil diupdate.'
-                      : 'Tidak ada perubahan pada data Enrolment.',
-                  'data' => $Student
+                  'message' => $enrollment->wasChanged()
+                      ? 'Enrollment Successfully Updated.'
+                      : 'No Changes to Enrollment Data.',
+                  'data' => $enrollment
               ], 200);
           } catch (ModelNotFoundException $e) {
-              return response()->json(['message' => 'Data Enrolment tidak ditemukan'], 404);
+              return response()->json(['message' => 'Enrollment Not Found'], 404);
           }
       }
   
       public function destroy($id): JsonResponse
       {
           try {
-              $Student = Enrollment::findOrFail($id);
-              $Student->delete();
+              $enrollment = Enrollment::findOrFail($id);
+              $enrollment->delete();
   
-              return response()->json(['message' => 'Data Enrolment berhasil dihapus.']);
+              return response()->json(['message' => 'The Enrollment Has Been Successfully Deleted.']);
           } catch (ModelNotFoundException $e) {
-              return response()->json(['message' => 'Data Enrolment tidak ditemukan.'], 404);
+              return response()->json(['message' => 'Enrollment Not Found.'], 404);
           }
       }
 }

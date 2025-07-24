@@ -16,11 +16,11 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         User::create([
-            'id' => (string) Str::ulid(),
-            'name' => 'Admin',
-            'username' => 'admin',
-            'email' => 'admin@ifump.net',
-            'password' => Hash::make('password')
-        ]);
+        'id' => (string) Str::ulid(),
+        'name' => 'Admin',
+        'email' => 'admin@ifump.net',
+        'password' => Hash::make('password'),
+    ]);
+
     }
 }
